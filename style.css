@@ -1,0 +1,81 @@
+:root {
+  --bg: #f6f1e7;
+  --card: #fffaf2;
+  --text: #2e261f;
+  --accent: #7a4f2f;
+  --border: #dcccb6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Georgia, "Times New Roman", serif;
+  background: radial-gradient(circle at top, #fff6e8 0%, var(--bg) 50%, #efe2cc 100%);
+  color: var(--text);
+}
+
+.page {
+  width: min(900px, 92vw);
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  box-shadow: 0 12px 30px rgba(80, 59, 38, 0.15);
+}
+
+.header h1 {
+  margin: 0;
+  color: var(--accent);
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+}
+
+.status {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border-radius: 10px;
+  background: #f7efe0;
+  border: 1px dashed var(--border);
+}
+
+.content {
+  margin-top: 1rem;
+}
+
+.content iframe {
+  width: 100%;
+  min-height: 75vh;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.content .html-content {
+  line-height: 1.6;
+  word-wrap: break-word;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.content .pdf-link {
+  display: inline-block;
+  margin-bottom: 0.8rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.error {
+  background: #fdecec;
+  border-color: #d76565;
+  color: #7f1f1f;
+}
