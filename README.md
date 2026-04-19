@@ -12,7 +12,7 @@ Interface web simples (HTML, CSS e JavaScript) que consome a API para mostrar a 
 
 A pagina:
 
-- Faz requisicao para `http://localhost:3000/missallete/today`
+- Faz requisicao para `https://api-nodejs-liturgia-diaria.vercel.app/missallete/today`
 - Exibe titulo com a data do dia
 - Renderiza link para PDF quando `type = "pdf"`
 - Renderiza HTML diretamente quando `type = "html"`
@@ -27,7 +27,7 @@ A pagina:
 ## Requisitos
 
 - Navegador moderno
-- Backend em execucao local na porta `3000`
+- API disponivel em `https://api-nodejs-liturgia-diaria.vercel.app`
 
 ## Como executar
 
@@ -51,7 +51,7 @@ Depois abra a URL exibida no terminal.
 
 O frontend depende do endpoint:
 
-- `GET http://localhost:3000/missallete/today`
+- `GET https://api-nodejs-liturgia-diaria.vercel.app/missallete/today`
 
 Se o backend estiver em outra URL/porta, altere a constante `API_URL` no arquivo `app.js`.
 

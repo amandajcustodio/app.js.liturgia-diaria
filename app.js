@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/missallete/today";
+const API_URL = "https://api-nodejs-liturgia-diaria.vercel.app/missallete/today";
 
 const titleElement = document.getElementById("today-title");
 const statusElement = document.getElementById("status");
