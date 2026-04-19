@@ -1,0 +1,20 @@
+{
+  "name": "Liturgia do Dia",
+  "short_name": "Liturgia",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f1e7",
+  "theme_color": "#7a4f2f",
+  "icons": [
+    {
+      "src": "./holy-spirit.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./holy-spirit.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

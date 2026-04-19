@@ -3,6 +3,18 @@ const API_URL = "https://api-nodejs-liturgia-diaria.vercel.app/missallete/today"
 const titleElement = document.getElementById("today-title");
 const statusElement = document.getElementById("status");
 const contentElement = document.getElementById("content");
+const installButton = document.getElementById("install-button");
+
+let deferredInstallPrompt = null;
+
+function isMobileDevice() {
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  return /android|iphone|ipad|ipod|mobile/i.test(userAgent);
+}
+
+function buildMobilePdfViewerUrl(url) {
+  return `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(url)}`;
+}
 
 function formatDateBr(dateString) {
   if (!dateString) {
@@ -26,11 +38,19 @@ function showError(message) {
 
 function renderPdf(url) {
   const link = document.createElement("a");
-  link.href = url;
+  const mobile = isMobileDevice();
+  link.href = mobile ? buildMobilePdfViewerUrl(url) : url;
   link.target = "_blank";
   link.rel = "noopener noreferrer";
   link.className = "pdf-link";
   link.textContent = "Abrir PDF em nova aba";
+
+  if (mobile) {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.open(buildMobilePdfViewerUrl(url), "_blank", "noopener,noreferrer");
+    });
+  }
 
   contentElement.appendChild(link);
 }
@@ -73,4 +93,56 @@ async function loadMissallete() {
   }
 }
 
+function setupInstallPrompt() {
+  if (!installButton) {
+    return;
+  }
+
+  installButton.hidden = true;
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    installButton.hidden = false;
+    installButton.disabled = false;
+  });
+
+  window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    installButton.hidden = true;
+  });
+
+  installButton.addEventListener("click", async () => {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      installButton.hidden = true;
+      return;
+    }
+
+    const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent || "");
+    if (isiOS) {
+      alert("No iPhone/iPad: toque em Compartilhar e depois em Adicionar a Tela de Inicio.");
+      return;
+    }
+
+    alert("A instalacao automatica nao esta disponivel agora. Verifique se o navegador permite instalar este site.");
+  });
+}
+
+async function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) {
+    return;
+  }
+
+  try {
+    await navigator.serviceWorker.register("./service-worker.js");
+  } catch (_error) {
+    // Ignore registration errors; app content still works without offline support.
+  }
+}
+
 loadMissallete();
+setupInstallPrompt();
+registerServiceWorker();
