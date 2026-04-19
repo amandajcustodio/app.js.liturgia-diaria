@@ -7,6 +7,10 @@ const installButton = document.getElementById("install-button");
 
 let deferredInstallPrompt = null;
 
+function isRunningStandalone() {
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+}
+
 function isMobileDevice() {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
   return /android|iphone|ipad|ipod|mobile/i.test(userAgent);
@@ -67,13 +71,13 @@ async function loadMissallete() {
     const response = await fetch(API_URL);
 
     if (!response.ok) {
-      throw new Error("Nao foi possivel obter o folheto de hoje.");
+      throw new Error("Não foi possível obter o folheto de hoje.");
     }
 
     const data = await response.json();
 
     titleElement.textContent = `Liturgia do dia ${formatDateBr(data.date)}`;
-    statusElement.textContent = "Conteudo carregado.";
+    statusElement.textContent = "Conteúdo carregado.";
     statusElement.classList.remove("error");
 
     contentElement.innerHTML = "";
@@ -83,12 +87,12 @@ async function loadMissallete() {
     } else if (data.type === "html") {
       renderHtml(data.content);
     } else {
-      throw new Error("Tipo de conteudo nao suportado.");
+      throw new Error("Tipo de conteúdo não suportado.");
     }
 
     contentElement.hidden = false;
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Erro ao carregar conteudo.";
+    const message = error instanceof Error ? error.message : "Erro ao carregar conteúdo.";
     showError(message);
   }
 }
@@ -98,18 +102,24 @@ function setupInstallPrompt() {
     return;
   }
 
-  installButton.hidden = true;
+  if (isRunningStandalone()) {
+    installButton.textContent = "Atalho já adicionado";
+    installButton.disabled = true;
+    return;
+  }
+
+  installButton.hidden = false;
+  installButton.disabled = false;
 
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     deferredInstallPrompt = event;
-    installButton.hidden = false;
-    installButton.disabled = false;
   });
 
   window.addEventListener("appinstalled", () => {
     deferredInstallPrompt = null;
-    installButton.hidden = true;
+    installButton.textContent = "Atalho já adicionado";
+    installButton.disabled = true;
   });
 
   installButton.addEventListener("click", async () => {
@@ -123,11 +133,17 @@ function setupInstallPrompt() {
 
     const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent || "");
     if (isiOS) {
-      alert("No iPhone/iPad: toque em Compartilhar e depois em Adicionar a Tela de Inicio.");
+      alert("No iPhone/iPad: toque em Compartilhar e depois em Adicionar à Tela de Início.");
       return;
     }
 
-    alert("A instalacao automatica nao esta disponivel agora. Verifique se o navegador permite instalar este site.");
+    const isSamsungInternet = /SamsungBrowser/i.test(navigator.userAgent || "");
+    if (isSamsungInternet) {
+      alert("No Samsung Internet: toque no menu (3 linhas) e escolha Adicionar página a > Tela inicial.");
+      return;
+    }
+
+    alert("A instalação automática não está disponível agora. Abra o menu do navegador e escolha Adicionar à tela inicial.");
   });
 }
 
