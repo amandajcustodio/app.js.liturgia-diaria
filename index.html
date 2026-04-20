@@ -4,18 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Liturgia Diária</title>
-    <link rel="icon" type="image/png" href="./holy-spirit.png" />
-    <link rel="apple-touch-icon" href="./holy-spirit.png" />
+    <link rel="icon" type="image/png" href="./assets/icons/holy-spirit.png" />
+    <link rel="apple-touch-icon" href="./assets/icons/holy-spirit.png" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <meta name="theme-color" content="#7a4f2f" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Liturgia do Dia" />
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./assets/styles/style.css" />
   </head>
   <body>
     <main class="page">
-      <header class="header">
-        <h1 id="today-title">Liturgia do dia</h1>
+      <header class="liturgy-info" aria-label="Informações da liturgia">
+        <h1 id="liturgy-title" class="liturgy-info-title">Liturgia Diária</h1>
+        <p id="liturgy-season">Tempo litúrgico não informado.</p>
+        <p id="liturgy-color" class="liturgy-info-color">Cor Litúrgica: não informada.</p>
       </header>
 
       <section id="status" class="status">Carregando conteúdo...</section>
@@ -25,9 +27,12 @@
         <button id="install-button" class="install-button" type="button">
           Adicionar a tela inicial
         </button>
+        <button id="sunday-booklet-button" class="sunday-booklet-button" type="button" disabled>
+          Folheto de domingo ainda não disponível
+        </button>
       </footer>
     </main>
 
-    <script src="./app.js"></script>
+    <script type="module" src="./assets/scripts/main.js"></script>
   </body>
 </html>

@@ -1,0 +1,194 @@
+:root {
+  --background: #f6f1e7;
+  --surface: #fffaf2;
+  --text: #47311f;
+  --accent: #7a4f2f;
+  --border: #d6b88f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  background: linear-gradient(180deg, #f8f3ea 0%, var(--background) 100%);
+  color: var(--text);
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.page {
+  width: min(860px, 100%);
+  background: var(--surface);
+  border: 1px solid rgba(122, 79, 47, 0.15);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 12px 30px rgba(80, 59, 38, 0.15);
+}
+
+.liturgy-info {
+  margin-bottom: 3rem;
+}
+
+.liturgy-info p {
+  margin: 0;
+}
+
+.liturgy-info > * + * {
+  margin-top: 0.35rem;
+}
+
+.liturgy-info-title {
+  margin: 0;
+  color: var(--accent);
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 700;
+}
+
+.liturgy-info-color {
+  margin-top: 0.7rem !important;
+  font-weight: 700;
+}
+
+.status {
+  padding: 1rem;
+  border-radius: 12px;
+  background: #fff7ec;
+  border: 1px solid var(--border);
+}
+
+.status.error {
+  background: #fff0ee;
+  border-color: #d9a19c;
+  color: #8b2e24;
+}
+
+.content {
+  margin-top: 1rem;
+}
+
+.liturgy-choices {
+  margin-bottom: 0.9rem;
+  padding: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #f9f1e4;
+}
+
+.liturgy-choices-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.liturgy-choices-buttons {
+  margin-top: 0.7rem;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.liturgy-choice-button {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.liturgy-choice-button.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.content iframe {
+  width: 100%;
+  min-height: 75vh;
+  border: 0;
+  border-radius: 12px;
+}
+
+.pdf-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 0.85rem 1.2rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.html-content {
+  line-height: 1.65;
+}
+
+.html-content img {
+  max-width: 100%;
+}
+
+.install-area {
+  margin-top: 1.2rem;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.install-button,
+.sunday-booklet-button {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.install-button:hover,
+.sunday-booklet-button:hover {
+  filter: brightness(0.97);
+}
+
+.install-button:active,
+.sunday-booklet-button:active {
+  transform: translateY(1px);
+}
+
+.sunday-booklet-button:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .page {
+    margin: 1rem auto;
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .install-area {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .install-button,
+  .sunday-booklet-button {
+    width: auto;
+  }
+}
