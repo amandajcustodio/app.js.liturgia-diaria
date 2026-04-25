@@ -17,3 +17,7 @@ export async function fetchTodayMissallete() {
 export async function fetchSundayMissallete() {
   return fetchJson(endpoints.sundayMissallete, "Não foi possível obter o folheto de domingo.");
 }
+
+export async function fetchTomorrowLiturgy() {
+  return fetchJson(endpoints.tomorrowLiturgy, "Não foi possível obter a liturgia de domingo.");
+}

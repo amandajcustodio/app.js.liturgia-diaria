@@ -42,6 +42,17 @@ export function showReadyState() {
   contentElement.hidden = false;
 }
 
+export function showNotice(message) {
+  statusElement.textContent = message;
+  statusElement.classList.remove("error");
+  statusElement.hidden = false;
+}
+
+export function clearContent() {
+  contentElement.innerHTML = "";
+  contentElement.hidden = true;
+}
+
 export function renderLiturgyHeader(missallete) {
   if (!liturgyTitleElement || !liturgySeasonElement || !liturgyColorElement) {
     return;
@@ -110,6 +121,34 @@ function getChoiceLabel(choiceId) {
   return choiceId === "sunday" ? "Domingo" : "Sábado";
 }
 
+function appendSundayPdfUnavailableNotice(mountElement) {
+  const notice = document.createElement("div");
+  notice.className = "pdf-inline-notice";
+  notice.textContent = "Folheto de domingo ainda não disponível.";
+  mountElement.appendChild(notice);
+}
+
+function getNextIsoDate(isoDate) {
+  if (!isoDate) {
+    return isoDate;
+  }
+
+  const [year, month, day] = String(isoDate).split("-").map(Number);
+
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+    return isoDate;
+  }
+
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() + 1);
+
+  const nextYear = date.getUTCFullYear();
+  const nextMonth = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const nextDay = String(date.getUTCDate()).padStart(2, "0");
+
+  return `${nextYear}-${nextMonth}-${nextDay}`;
+}
+
 export function renderLiturgyChoices(data) {
   const choices = Array.isArray(data.choices) ? data.choices : [];
   contentElement.innerHTML = "";
@@ -141,7 +180,16 @@ export function renderLiturgyChoices(data) {
 
   const selectChoice = (choice) => {
     renderLiturgyHeader(choice.missallete);
-    renderMissalleteContent(choice.missallete, contentMount);
+
+    if (choice.id === "sunday" && choice.missallete?.type === "html") {
+      contentMount.innerHTML = "";
+      appendSundayPdfUnavailableNotice(contentMount);
+      const sundayContentMount = document.createElement("div");
+      contentMount.appendChild(sundayContentMount);
+      renderMissalleteContent(choice.missallete, sundayContentMount);
+    } else {
+      renderMissalleteContent(choice.missallete, contentMount);
+    }
 
     for (const [choiceId, button] of buttonsByChoiceId.entries()) {
       button.classList.toggle("active", choiceId === choice.id);
@@ -164,4 +212,76 @@ export function renderLiturgyChoices(data) {
   if (defaultChoice) {
     selectChoice(defaultChoice);
   }
+}
+
+export function renderSaturdayChoicesWithSundayNotice(data, sundayMissallete, sundayNoticeMessage) {
+  contentElement.innerHTML = "";
+
+  const choicesContainer = document.createElement("div");
+  choicesContainer.className = "liturgy-choices";
+
+  const choicesTitle = document.createElement("p");
+  choicesTitle.className = "liturgy-choices-title";
+  choicesTitle.textContent = "Escolha a liturgia para leitura:";
+
+  const choicesButtons = document.createElement("div");
+  choicesButtons.className = "liturgy-choices-buttons";
+
+  const saturdayButton = document.createElement("button");
+  saturdayButton.type = "button";
+  saturdayButton.className = "liturgy-choice-button";
+  saturdayButton.textContent = "Sábado";
+
+  const sundayButton = document.createElement("button");
+  sundayButton.type = "button";
+  sundayButton.className = "liturgy-choice-button";
+  sundayButton.textContent = "Domingo";
+
+  const contentMount = document.createElement("div");
+
+  contentElement.appendChild(choicesContainer);
+  choicesContainer.appendChild(choicesTitle);
+  choicesContainer.appendChild(choicesButtons);
+  choicesButtons.appendChild(saturdayButton);
+  choicesButtons.appendChild(sundayButton);
+  contentElement.appendChild(contentMount);
+
+  const setActiveButton = (choiceId) => {
+    saturdayButton.classList.toggle("active", choiceId === "saturday");
+    sundayButton.classList.toggle("active", choiceId === "sunday");
+  };
+
+  const selectSaturday = () => {
+    renderLiturgyHeader(data);
+    renderMissalleteContent(data, contentMount);
+    setActiveButton("saturday");
+  };
+
+  const selectSunday = () => {
+    const sundayDate = getNextIsoDate(data?.date);
+    const sundayContent = sundayMissallete ?? {
+      ...data,
+      date: sundayDate
+    };
+
+    renderLiturgyHeader(sundayContent);
+    contentMount.innerHTML = "";
+
+    if (sundayNoticeMessage) {
+      appendSundayPdfUnavailableNotice(contentMount);
+    }
+
+    if (sundayMissallete) {
+      const sundayContentMount = document.createElement("div");
+      contentMount.appendChild(sundayContentMount);
+      renderMissalleteContent(sundayMissallete, sundayContentMount);
+    }
+
+    setActiveButton("sunday");
+  };
+
+  saturdayButton.addEventListener("click", selectSaturday);
+  sundayButton.addEventListener("click", selectSunday);
+
+  selectSaturday();
 }

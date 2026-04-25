@@ -132,6 +132,18 @@ body {
   font-weight: 700;
 }
 
+.pdf-inline-notice {
+  width: fit-content;
+  margin: 0 auto 1rem;
+  padding: 0.85rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fff7ec;
+  color: var(--accent);
+  font-weight: 700;
+  text-align: center;
+}
+
 .html-content {
   line-height: 1.65;
 }
