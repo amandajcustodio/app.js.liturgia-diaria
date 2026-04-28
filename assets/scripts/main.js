@@ -34,7 +34,16 @@ function isSaoPauloSunday() {
   return getSaoPauloWeekdayLabel() === "Sun";
 }
 
+function shouldHideSundayBookletButton() {
+  return isSaoPauloSaturday() || isSaoPauloSunday();
+}
+
 async function loadSundayBookletAvailability() {
+  if (shouldHideSundayBookletButton()) {
+    setSundayBookletVisibility(true);
+    return { available: false, data: null };
+  }
+
   setSundayBookletVisibility(true);
   setSundayBookletUnavailable();
 
@@ -90,7 +99,6 @@ async function loadMissallete() {
       return;
     }
 
-    setSundayBookletVisibility(true);
     showReadyState();
     renderLiturgyChoices(data);
     trackEvent("missallete_loaded", {
@@ -99,21 +107,15 @@ async function loadMissallete() {
       hasSaturdayChoices
     });
 
-    if (!isSaturday || hasSaturdayChoices) {
-      return;
-    }
-
-    const sundayBooklet = await loadSundayBookletAvailability();
-
-    if (!sundayBooklet.available) {
-      showNotice("Folheto de domingo ainda não disponível.");
+    if (!isSaoPauloSunday()) {
+      await loadSundayBookletAvailability();
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Erro ao carregar conteúdo.";
     
     if (isSaoPauloSunday()) {
       clearContent();
-      setSundayBookletVisibility(false);
+      setSundayBookletVisibility(true);
       showNotice("Folheto de domingo ainda não disponível.");
       trackEvent("sunday_download_only_unavailable");
       return;
