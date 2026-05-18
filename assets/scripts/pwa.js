@@ -4,6 +4,78 @@ import { buildMobilePdfViewerUrl, isMobileDevice, isRunningStandalone } from "./
 import { endpoints, VAPID_PUBLIC_KEY } from "./config.js";
 
 let deferredInstallPrompt = null;
+const IOS_INSTALL_MODAL_ID = "ios-install-modal";
+
+function closeIOSInstallModal() {
+  const modal = document.getElementById(IOS_INSTALL_MODAL_ID);
+  if (modal) {
+    modal.remove();
+  }
+}
+
+function showIOSInstallModal() {
+  closeIOSInstallModal();
+
+  const modal = document.createElement("div");
+  modal.id = IOS_INSTALL_MODAL_ID;
+  modal.className = "install-modal-backdrop";
+  modal.innerHTML = `
+    <div class="install-modal" role="dialog" aria-modal="true" aria-label="Como instalar no iPhone">
+      <h2>Instalar no iPhone</h2>
+      <p>Faça isso para adicionar à tela inicial:</p>
+      <div class="install-mini-guide" aria-hidden="true">
+        <div class="install-mini-phone">
+          <div class="install-mini-topbar">Safari</div>
+          <div class="install-mini-content"></div>
+          <div class="install-mini-share-button">Compartilhar</div>
+          <div class="install-mini-finger"></div>
+        </div>
+        <p class="install-mini-caption">Animação (5s): toque em Compartilhar e depois em Adicionar à Tela de Início.</p>
+      </div>
+      <ol>
+        <li>Toque em <strong>Compartilhar</strong> no Safari.</li>
+        <li>Escolha <strong>Adicionar à Tela de Início</strong>.</li>
+        <li>Confirme em <strong>Adicionar</strong>.</li>
+      </ol>
+      <div class="install-modal-actions">
+        <button type="button" class="install-modal-secondary" data-action="close">Fechar</button>
+        <button type="button" class="install-modal-primary" data-action="share">Abrir Compartilhar</button>
+      </div>
+    </div>
+  `;
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeIOSInstallModal();
+    }
+  });
+
+  const closeButton = modal.querySelector('[data-action="close"]');
+  closeButton?.addEventListener("click", () => {
+    closeIOSInstallModal();
+  });
+
+  const shareButton = modal.querySelector('[data-action="share"]');
+  shareButton?.addEventListener("click", async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: document.title,
+          text: "Instale o app Liturgia Diária no seu iPhone",
+          url: window.location.href
+        });
+        trackEvent("install_ios_share_opened");
+      } catch {
+        trackEvent("install_ios_share_dismissed");
+      }
+      return;
+    }
+
+    alert("No iPhone/iPad: toque em Compartilhar e depois em Adicionar à Tela de Início.");
+  });
+
+  document.body.appendChild(modal);
+}
 
 export function setupInstallPrompt() {
   if (!installButton) {
@@ -51,7 +123,7 @@ export function setupInstallPrompt() {
     const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent || "");
     if (isiOS) {
       trackEvent("install_manual_instructions_shown", { platform: "ios" });
-      alert("No iPhone/iPad: toque em Compartilhar e depois em Adicionar à Tela de Início.");
+      showIOSInstallModal();
       return;
     }
 
