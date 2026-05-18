@@ -1,6 +1,7 @@
 import { installButton, sundayBookletButton } from "./dom.js";
 import { trackEvent } from "./analytics.js";
 import { buildMobilePdfViewerUrl, isMobileDevice, isRunningStandalone } from "./platform.js";
+import { endpoints, VAPID_PUBLIC_KEY } from "./config.js";
 
 let deferredInstallPrompt = null;
 
@@ -100,5 +101,95 @@ export async function registerServiceWorker() {
     await navigator.serviceWorker.register("./service-worker.js");
   } catch (_error) {
     // Ignore registration errors; app content still works without offline support.
+  }
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+}
+
+async function sendSubscriptionToServer(subscription) {
+  try {
+    await fetch(endpoints.pushSubscribe, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(subscription),
+    });
+  } catch {
+    // Non-fatal: the app still works without push notifications.
+  }
+}
+
+async function sendUnsubscribeToServer(endpoint) {
+  try {
+    await fetch(endpoints.pushUnsubscribe, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ endpoint }),
+    });
+  } catch {
+    // Non-fatal.
+  }
+}
+
+/**
+ * Subscribes the user to push notifications.
+ * Requests permission if not yet granted and registers the push subscription.
+ * Call this in response to a user gesture.
+ */
+export async function subscribeToPushNotifications() {
+  if (!("Notification" in window) || !("PushManager" in window) || !VAPID_PUBLIC_KEY) {
+    return;
+  }
+
+  const permission = await Notification.requestPermission();
+  if (permission !== "granted") {
+    trackEvent("push_permission_denied");
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    let subscription = await registration.pushManager.getSubscription();
+
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+      trackEvent("push_subscribed");
+    }
+
+    await sendSubscriptionToServer(subscription);
+  } catch {
+    trackEvent("push_subscribe_failed");
+  }
+}
+
+/**
+ * Re-registers an existing push subscription with the server on every page load.
+ * This ensures the server always has a valid token, even after browser/SW updates.
+ */
+export async function syncPushSubscription() {
+  if (!("serviceWorker" in navigator) || !("PushManager" in window) || !VAPID_PUBLIC_KEY) {
+    return;
+  }
+
+  if (Notification.permission !== "granted") {
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+
+    if (subscription) {
+      await sendSubscriptionToServer(subscription);
+    }
+  } catch {
+    // Non-fatal.
   }
 }

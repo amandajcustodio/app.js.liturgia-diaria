@@ -11,7 +11,7 @@ import {
   showNotice,
   showReadyState
 } from "./render.js";
-import { registerServiceWorker, setupInstallPrompt, setupSundayBookletButton } from "./pwa.js";
+import { registerServiceWorker, setupInstallPrompt, setupSundayBookletButton, subscribeToPushNotifications, syncPushSubscription } from "./pwa.js";
 
 /**
  * @typedef {{ type: "html" | "pdf", date: string, content: string, metadata?: { season: string | null, color: string | null } }} Missallete
@@ -19,23 +19,38 @@ import { registerServiceWorker, setupInstallPrompt, setupSundayBookletButton } f
  * @typedef {Missallete & { choices?: LiturgyChoice[] }} MissalleteResponse
  */
 
-function getSaoPauloWeekdayLabel() {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Sao_Paulo",
-    weekday: "short"
-  }).format(new Date());
+function getSaoPauloWeekdayNumber() {
+  const saoPauloNow = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
+  );
+  return saoPauloNow.getDay();
 }
 
 function isSaoPauloSaturday() {
-  return getSaoPauloWeekdayLabel() === "Sat";
+  return getSaoPauloWeekdayNumber() === 6;
 }
 
 function isSaoPauloSunday() {
-  return getSaoPauloWeekdayLabel() === "Sun";
+  return getSaoPauloWeekdayNumber() === 0;
 }
 
 function shouldHideSundayBookletButton() {
   return isSaoPauloSaturday() || isSaoPauloSunday();
+}
+
+function getIsoDateWeekdayNumber(isoDate) {
+  const [year, month, day] = String(isoDate || "").split("-").map(Number);
+
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+    return null;
+  }
+
+  return new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+}
+
+function shouldHideSundayBookletButtonForDate(isoDate) {
+  const weekday = getIsoDateWeekdayNumber(isoDate);
+  return weekday === 0 || weekday === 6;
 }
 
 async function loadSundayBookletAvailability() {
@@ -44,8 +59,8 @@ async function loadSundayBookletAvailability() {
     return { available: false, data: null };
   }
 
-  setSundayBookletVisibility(true);
   setSundayBookletUnavailable();
+  setSundayBookletVisibility(false);
 
   try {
     const data = await fetchSundayMissallete();
@@ -56,7 +71,6 @@ async function loadSundayBookletAvailability() {
     }
 
     setSundayBookletAvailable(data.content, data.date);
-    setSundayBookletVisibility(false);
     trackEvent("sunday_booklet_available", { date: data.date });
     return { available: true, data };
   } catch {
@@ -72,6 +86,11 @@ async function loadMissallete() {
     const data = await fetchTodayMissallete();
     const hasSaturdayChoices = Array.isArray(data.choices) && data.choices.length >= 2;
     const isSaturday = isSaoPauloSaturday();
+    const shouldHideByDataDate = shouldHideSundayBookletButtonForDate(data?.date);
+
+    if (shouldHideByDataDate) {
+      setSundayBookletVisibility(true);
+    }
 
     if (isSaturday && !hasSaturdayChoices) {
       const sundayBooklet = await loadSundayBookletAvailability();
@@ -107,7 +126,7 @@ async function loadMissallete() {
       hasSaturdayChoices
     });
 
-    if (!isSaoPauloSunday()) {
+    if (!isSaoPauloSunday() && !shouldHideByDataDate) {
       await loadSundayBookletAvailability();
     }
   } catch (error) {
@@ -126,7 +145,19 @@ async function loadMissallete() {
   }
 }
 
+if (shouldHideSundayBookletButton()) {
+  setSundayBookletVisibility(true);
+}
+
 loadMissallete();
 setupInstallPrompt();
 setupSundayBookletButton();
 registerServiceWorker();
+
+// Subscribe to push notifications after installing (user gesture via appinstalled event)
+window.addEventListener("appinstalled", () => {
+  subscribeToPushNotifications();
+});
+
+// Re-sync existing subscription with the server on every load
+syncPushSubscription();
