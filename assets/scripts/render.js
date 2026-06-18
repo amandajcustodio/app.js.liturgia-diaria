@@ -144,6 +144,7 @@ export function setSundayBookletAvailable(pdfUrl, isoDate) {
   const dateForLabel = formatDateDdMmYy(isoDate);
   sundayBookletButton.disabled = false;
   sundayBookletButton.dataset.url = pdfUrl;
+  sundayBookletButton.dataset.date = isoDate ?? "";
   sundayBookletButton.textContent = dateForLabel
     ? `Baixar folheto de domingo - ${dateForLabel}`
     : "Baixar folheto de domingo";

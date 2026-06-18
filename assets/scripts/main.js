@@ -11,7 +11,8 @@ import {
   showNotice,
   showReadyState
 } from "./render.js";
-import { registerServiceWorker, setupInstallPrompt, setupSundayBookletButton, subscribeToPushNotifications, syncPushSubscription } from "./pwa.js";
+import { isRunningStandalone } from "./platform.js";
+import { registerServiceWorker, markSundayBookletSeen, setupInstallPrompt, setupSundayBookletButton, subscribeToPushNotifications, syncPushSubscription } from "./pwa.js";
 
 /**
  * @typedef {{ season: string | null, color: string | null }} LiturgyMetadata
@@ -74,6 +75,7 @@ async function loadSundayBookletAvailability() {
 
     setSundayBookletAvailable(data.content, data.date);
     trackEvent("sunday_booklet_available", { date: data.date });
+    await markSundayBookletSeen(data.date);
     return { available: true, data };
   } catch {
     setSundayBookletUnavailable();
@@ -163,3 +165,15 @@ window.addEventListener("appinstalled", () => {
 
 // Re-sync existing subscription with the server on every load
 syncPushSubscription();
+
+// Standalone PWA: request push permission on first interaction (iOS requires a gesture)
+if (isRunningStandalone() && Notification.permission === "default") {
+  const requestPushOnGesture = () => {
+    subscribeToPushNotifications();
+    window.removeEventListener("click", requestPushOnGesture);
+    window.removeEventListener("touchstart", requestPushOnGesture);
+  };
+
+  window.addEventListener("click", requestPushOnGesture, { once: true });
+  window.addEventListener("touchstart", requestPushOnGesture, { once: true });
+}

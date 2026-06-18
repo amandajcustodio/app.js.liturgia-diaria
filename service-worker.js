@@ -33,6 +33,8 @@ self.addEventListener("push", (event) => {
     body: payload.body ?? "",
     icon: "/assets/icons/icon-192.png",
     badge: "/assets/icons/holy-spirit.png",
+    tag: payload.tag ?? "liturgia-diaria",
+    renotify: true,
     data: { url: payload.url ?? "/" },
   };
 
@@ -42,12 +44,15 @@ self.addEventListener("push", (event) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  const targetUrl = event.notification.data?.url ?? "/";
+  const rawUrl = event.notification.data?.url ?? "/";
+  const targetUrl = rawUrl.startsWith("http")
+    ? rawUrl
+    : new URL(rawUrl, self.location.origin).href;
 
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
-        if (client.url === targetUrl && "focus" in client) {
+        if ("focus" in client) {
           return client.focus();
         }
       }

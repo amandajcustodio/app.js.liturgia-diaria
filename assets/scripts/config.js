@@ -7,6 +7,7 @@ export const endpoints = {
   tomorrowLiturgy: `${baseUrl}/missallete/tomorrow-liturgy`,
   pushSubscribe: `${baseUrl}/push/subscribe`,
   pushUnsubscribe: `${baseUrl}/push/unsubscribe`,
+  pushMarkSeen: `${baseUrl}/push/mark-seen`,
 };
 
 // VAPID public key — must match the VAPID_PUBLIC_KEY env var set in the API server.

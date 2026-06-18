@@ -130,13 +130,40 @@ export function setupInstallPrompt() {
   });
 }
 
+export async function markSundayBookletSeen(sundayIsoDate) {
+  if (!sundayIsoDate || !("serviceWorker" in navigator) || !("PushManager" in window)) {
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+
+    if (!subscription) {
+      return;
+    }
+
+    await fetch(endpoints.pushMarkSeen, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        endpoint: subscription.endpoint,
+        sundayIsoDate,
+      }),
+    });
+  } catch {
+    // Non-fatal.
+  }
+}
+
 export function setupSundayBookletButton() {
   if (!sundayBookletButton) {
     return;
   }
 
-  sundayBookletButton.addEventListener("click", () => {
+  sundayBookletButton.addEventListener("click", async () => {
     const targetUrl = sundayBookletButton.dataset.url;
+    const sundayIsoDate = sundayBookletButton.dataset.date;
 
     if (!targetUrl || sundayBookletButton.disabled) {
       trackEvent("sunday_booklet_click_blocked", {
@@ -146,6 +173,8 @@ export function setupSundayBookletButton() {
       return;
     }
 
+    await subscribeToPushNotifications();
+    await markSundayBookletSeen(sundayIsoDate);
     trackEvent("sunday_booklet_button_clicked");
     window.open(targetUrl, "_blank", "noopener,noreferrer");
   });
