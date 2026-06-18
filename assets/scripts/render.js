@@ -7,25 +7,76 @@ import {
   sundayBookletButton
 } from "./dom.js";
 import { formatDateDdMmYy, formatLongDatePtBr, formatWeekdayPtBr } from "./formatters.js";
-import { buildMobilePdfViewerUrl, isMobileDevice } from "./platform.js";
 
 function createPdfLink(url) {
   const link = document.createElement("a");
-  const mobile = isMobileDevice();
-  link.href = mobile ? buildMobilePdfViewerUrl(url) : url;
+  link.href = url;
   link.target = "_blank";
   link.rel = "noopener noreferrer";
   link.className = "pdf-link";
   link.textContent = "Abrir PDF em nova aba";
+  return link;
+}
 
-  if (mobile) {
-    link.addEventListener("click", (event) => {
-      event.preventDefault();
-      window.open(buildMobilePdfViewerUrl(url), "_blank", "noopener,noreferrer");
-    });
+function createPdfViewer(url) {
+  const container = document.createElement("div");
+  container.className = "pdf-viewer";
+
+  const iframe = document.createElement("iframe");
+  iframe.src = url;
+  iframe.title = "Folheto litúrgico";
+  iframe.loading = "lazy";
+
+  container.appendChild(iframe);
+  container.appendChild(createPdfLink(url));
+
+  return container;
+}
+
+function renderMeditation(meditation, mountElement) {
+  if (!meditation?.content) {
+    return;
   }
 
-  return link;
+  const section = document.createElement("section");
+  section.className = "meditation-section";
+
+  const heading = document.createElement("h2");
+  heading.className = "meditation-heading";
+  heading.textContent = "Meditação";
+
+  section.appendChild(heading);
+
+  if (meditation.title) {
+    const title = document.createElement("h3");
+    title.className = "meditation-title";
+    title.textContent = meditation.title;
+    section.appendChild(title);
+  }
+
+  const content = document.createElement("div");
+  content.className = "meditation-content html-content";
+  content.innerHTML = meditation.content;
+  section.appendChild(content);
+
+  mountElement.appendChild(section);
+}
+
+function renderMissalleteBody(missallete, mountElement) {
+  mountElement.innerHTML = "";
+
+  if (missallete.type === "pdf") {
+    mountElement.appendChild(createPdfViewer(missallete.content));
+  } else if (missallete.type === "html") {
+    const wrapper = document.createElement("div");
+    wrapper.className = "html-content";
+    wrapper.innerHTML = missallete.content;
+    mountElement.appendChild(wrapper);
+  } else {
+    throw new Error("Tipo de conteúdo não suportado.");
+  }
+
+  renderMeditation(missallete.meditation, mountElement);
 }
 
 export function showError(message) {
@@ -99,22 +150,7 @@ export function setSundayBookletAvailable(pdfUrl, isoDate) {
 }
 
 export function renderMissalleteContent(missallete, mountElement = contentElement) {
-  mountElement.innerHTML = "";
-
-  if (missallete.type === "pdf") {
-    mountElement.appendChild(createPdfLink(missallete.content));
-    return;
-  }
-
-  if (missallete.type === "html") {
-    const wrapper = document.createElement("div");
-    wrapper.className = "html-content";
-    wrapper.innerHTML = missallete.content;
-    mountElement.appendChild(wrapper);
-    return;
-  }
-
-  throw new Error("Tipo de conteúdo não suportado.");
+  renderMissalleteBody(missallete, mountElement);
 }
 
 function getChoiceLabel(choiceId) {

@@ -14,7 +14,9 @@ import {
 import { registerServiceWorker, setupInstallPrompt, setupSundayBookletButton, subscribeToPushNotifications, syncPushSubscription } from "./pwa.js";
 
 /**
- * @typedef {{ type: "html" | "pdf", date: string, content: string, metadata?: { season: string | null, color: string | null } }} Missallete
+ * @typedef {{ season: string | null, color: string | null }} LiturgyMetadata
+ * @typedef {{ title: string | null, content: string, sourceUrl: string, date: string }} MeditationContent
+ * @typedef {{ type: "html" | "pdf", date: string, content: string, metadata?: LiturgyMetadata, meditation?: MeditationContent | null }} Missallete
  * @typedef {{ id: "saturday" | "sunday", missallete: Missallete }} LiturgyChoice
  * @typedef {Missallete & { choices?: LiturgyChoice[] }} MissalleteResponse
  */

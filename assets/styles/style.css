@@ -116,6 +116,13 @@ body {
   min-height: 75vh;
   border: 0;
   border-radius: 12px;
+  background: #fff;
+}
+
+.pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
 }
 
 .pdf-link {
@@ -130,6 +137,68 @@ body {
   color: #fff;
   text-decoration: none;
   font-weight: 700;
+}
+
+.meditation-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.meditation-heading {
+  margin: 0 0 0.75rem;
+  color: var(--accent);
+  font-size: 1.35rem;
+}
+
+.meditation-title {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.meditation-content blockquote {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--border);
+  background: #fff7ec;
+}
+
+.sources-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(122, 79, 47, 0.12);
+  text-align: center;
+}
+
+.sources-footer-title {
+  margin: 0 0 0.45rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(71, 49, 31, 0.55);
+}
+
+.sources-footer-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 0.8rem;
+  font-size: 0.82rem;
+}
+
+.sources-footer-list a {
+  color: rgba(71, 49, 31, 0.68);
+  text-decoration: none;
+}
+
+.sources-footer-list a:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 .pdf-inline-notice {
@@ -219,123 +288,6 @@ body {
 .install-modal ol {
   margin: 0.75rem 0 0;
   padding-left: 1.2rem;
-}
-
-.install-mini-guide {
-  margin-top: 0.9rem;
-  padding: 0.7rem;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #fff7ec;
-}
-
-.install-mini-phone {
-  position: relative;
-  height: 140px;
-  border-radius: 16px;
-  border: 2px solid #6f4d31;
-  background: #ffffff;
-  overflow: hidden;
-}
-
-.install-mini-topbar {
-  height: 24px;
-  line-height: 24px;
-  text-align: center;
-  font-size: 0.75rem;
-  font-weight: 700;
-  background: #efe2ce;
-  border-bottom: 1px solid #dcc3a0;
-}
-
-.install-mini-content {
-  position: absolute;
-  inset: 24px 0 38px;
-  background: linear-gradient(180deg, #fffaf3 0%, #f7ebda 100%);
-}
-
-.install-mini-share-button {
-  position: absolute;
-  left: 50%;
-  bottom: 8px;
-  transform: translateX(-50%);
-  min-width: 130px;
-  text-align: center;
-  border-radius: 999px;
-  border: 1px solid #a87e53;
-  background: #fff;
-  color: #6f4d31;
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 0.35rem 0.65rem;
-  animation: installSharePulse 5s ease-in-out infinite;
-}
-
-.install-mini-finger {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: rgba(122, 79, 47, 0.35);
-  border: 2px solid #7a4f2f;
-  left: 20%;
-  top: 36%;
-  animation: installFingerPath 5s ease-in-out infinite;
-}
-
-.install-mini-caption {
-  margin: 0.55rem 0 0;
-  font-size: 0.86rem;
-  font-weight: 600;
-  color: #66452d;
-}
-
-@keyframes installFingerPath {
-  0% {
-    left: 20%;
-    top: 36%;
-    transform: scale(1);
-    opacity: 0.95;
-  }
-  55% {
-    left: 50%;
-    top: 78%;
-    transform: translateX(-50%) scale(1);
-    opacity: 0.95;
-  }
-  70% {
-    left: 50%;
-    top: 78%;
-    transform: translateX(-50%) scale(0.7);
-    opacity: 1;
-  }
-  85% {
-    left: 50%;
-    top: 78%;
-    transform: translateX(-50%) scale(1);
-    opacity: 1;
-  }
-  100% {
-    left: 50%;
-    top: 78%;
-    transform: translateX(-50%) scale(1);
-    opacity: 0.3;
-  }
-}
-
-@keyframes installSharePulse {
-  0%, 58%, 100% {
-    box-shadow: 0 0 0 0 rgba(122, 79, 47, 0);
-    background: #fff;
-  }
-  68% {
-    box-shadow: 0 0 0 6px rgba(122, 79, 47, 0.2);
-    background: #fff4e7;
-  }
-  78% {
-    box-shadow: 0 0 0 0 rgba(122, 79, 47, 0);
-    background: #fff;
-  }
 }
 
 .install-modal-actions {

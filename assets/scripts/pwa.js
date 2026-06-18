@@ -1,6 +1,6 @@
 import { installButton, sundayBookletButton } from "./dom.js";
 import { trackEvent } from "./analytics.js";
-import { buildMobilePdfViewerUrl, isMobileDevice, isRunningStandalone } from "./platform.js";
+import { isRunningStandalone } from "./platform.js";
 import { endpoints, VAPID_PUBLIC_KEY } from "./config.js";
 
 let deferredInstallPrompt = null;
@@ -22,19 +22,10 @@ function showIOSInstallModal() {
   modal.innerHTML = `
     <div class="install-modal" role="dialog" aria-modal="true" aria-label="Como instalar no iPhone">
       <h2>Instalar no iPhone</h2>
-      <p>Faça isso para adicionar à tela inicial:</p>
-      <div class="install-mini-guide" aria-hidden="true">
-        <div class="install-mini-phone">
-          <div class="install-mini-topbar">Safari</div>
-          <div class="install-mini-content"></div>
-          <div class="install-mini-share-button">Compartilhar</div>
-          <div class="install-mini-finger"></div>
-        </div>
-        <p class="install-mini-caption">Animação (5s): toque em Compartilhar e depois em Adicionar à Tela de Início.</p>
-      </div>
+      <p>Para adicionar à tela inicial no Safari:</p>
       <ol>
-        <li>Toque em <strong>Compartilhar</strong> no Safari.</li>
-        <li>Escolha <strong>Adicionar à Tela de Início</strong>.</li>
+        <li>Toque em <strong>Compartilhar</strong> na barra inferior do Safari.</li>
+        <li>Role e escolha <strong>Adicionar à Tela de Início</strong>.</li>
         <li>Confirme em <strong>Adicionar</strong>.</li>
       </ol>
       <div class="install-modal-actions">
@@ -155,12 +146,8 @@ export function setupSundayBookletButton() {
       return;
     }
 
-    const isMobile = isMobileDevice();
-    const urlToOpen = isMobile ? buildMobilePdfViewerUrl(targetUrl) : targetUrl;
-    trackEvent("sunday_booklet_button_clicked", {
-      mobile: isMobile
-    });
-    window.open(urlToOpen, "_blank", "noopener,noreferrer");
+    trackEvent("sunday_booklet_button_clicked");
+    window.open(targetUrl, "_blank", "noopener,noreferrer");
   });
 }
 
