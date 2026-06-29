@@ -14,23 +14,25 @@ function createPdfLink(url) {
   link.target = "_blank";
   link.rel = "noopener noreferrer";
   link.className = "pdf-link";
-  link.textContent = "Abrir PDF em nova aba";
+  link.textContent = "Abrir o PDF em uma nova aba";
   return link;
 }
 
-function createPdfViewer(url) {
-  const container = document.createElement("div");
-  container.className = "pdf-viewer";
+function renderMissalleteBody(missallete, mountElement) {
+  mountElement.innerHTML = "";
 
-  const iframe = document.createElement("iframe");
-  iframe.src = url;
-  iframe.title = "Folheto litúrgico";
-  iframe.loading = "lazy";
+  if (missallete.type === "pdf") {
+    mountElement.appendChild(createPdfLink(missallete.content));
+  } else if (missallete.type === "html") {
+    const wrapper = document.createElement("div");
+    wrapper.className = "html-content";
+    wrapper.innerHTML = missallete.content;
+    mountElement.appendChild(wrapper);
+  } else {
+    throw new Error("Tipo de conteúdo não suportado.");
+  }
 
-  container.appendChild(iframe);
-  container.appendChild(createPdfLink(url));
-
-  return container;
+  renderMeditation(missallete.meditation, mountElement);
 }
 
 function renderMeditation(meditation, mountElement) {
@@ -60,23 +62,6 @@ function renderMeditation(meditation, mountElement) {
   section.appendChild(content);
 
   mountElement.appendChild(section);
-}
-
-function renderMissalleteBody(missallete, mountElement) {
-  mountElement.innerHTML = "";
-
-  if (missallete.type === "pdf") {
-    mountElement.appendChild(createPdfViewer(missallete.content));
-  } else if (missallete.type === "html") {
-    const wrapper = document.createElement("div");
-    wrapper.className = "html-content";
-    wrapper.innerHTML = missallete.content;
-    mountElement.appendChild(wrapper);
-  } else {
-    throw new Error("Tipo de conteúdo não suportado.");
-  }
-
-  renderMeditation(missallete.meditation, mountElement);
 }
 
 export function showError(message) {

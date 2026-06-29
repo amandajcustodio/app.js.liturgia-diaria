@@ -73,6 +73,21 @@ body {
 
 .content {
   margin-top: 1rem;
+  line-height: 1.65;
+}
+
+.pdf-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 0.85rem 1.2rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
 }
 
 .liturgy-choices {
@@ -109,34 +124,6 @@ body {
   background: var(--accent);
   color: #fff;
   border-color: var(--accent);
-}
-
-.content iframe {
-  width: 100%;
-  min-height: 75vh;
-  border: 0;
-  border-radius: 12px;
-  background: #fff;
-}
-
-.pdf-viewer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.pdf-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  margin: 0 auto;
-  padding: 0.85rem 1.2rem;
-  border-radius: 999px;
-  background: var(--accent);
-  color: #fff;
-  text-decoration: none;
-  font-weight: 700;
 }
 
 .meditation-section {
@@ -219,6 +206,122 @@ body {
 
 .html-content img {
   max-width: 100%;
+}
+
+.html-content .reading {
+  margin: 1.75rem 0;
+  padding: 1rem 0;
+}
+
+.html-content .reading-title {
+  margin: 0 0 0.35rem;
+  color: var(--accent);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.html-content .reading-subtitle {
+  margin: 0 0 0.85rem;
+  font-style: italic;
+  color: rgba(71, 49, 31, 0.78);
+}
+
+.html-content .reading-reference {
+  display: block;
+  margin: 0 0 0.85rem;
+  font-size: 0.9rem;
+  color: rgba(71, 49, 31, 0.65);
+  font-weight: 600;
+}
+
+.html-content .reading-content {
+  margin-top: 0.35rem;
+}
+
+.html-content .reading-content > p {
+  margin: 0;
+}
+
+.html-content .verse-line {
+  margin: 0.65rem 0;
+  padding-left: 0.35rem;
+}
+
+.html-content .verse-line sup {
+  display: inline-block;
+  min-width: 1.4rem;
+  margin-right: 0.35rem;
+  font-weight: 700;
+  color: var(--accent);
+  vertical-align: top;
+}
+
+.html-content .psalm-response {
+  margin: 0.85rem 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: #fff7ec;
+  border: 1px solid rgba(214, 184, 143, 0.55);
+}
+
+.html-content .refrain {
+  margin: 0;
+  text-align: center;
+  color: var(--accent);
+}
+
+.html-content .psalm-reply {
+  display: inline-block;
+  margin-left: 0.35rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.html-content .alleluia-section {
+  margin: 1.75rem 0;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  border: 1px dashed rgba(214, 184, 143, 0.75);
+  background: rgba(255, 252, 245, 0.92);
+}
+
+.html-content .alleluia-section .reading-content {
+  text-align: center;
+}
+
+.html-content .gospel-section {
+  margin: 2rem 0;
+  padding: 1.35rem 1.15rem;
+  border-radius: 14px;
+  border: 1px solid rgba(214, 184, 143, 0.75);
+  background: linear-gradient(180deg, rgba(255, 247, 236, 0.98) 0%, rgba(255, 253, 248, 0.92) 100%);
+  box-shadow: 0 4px 20px rgba(122, 79, 47, 0.1);
+}
+
+.html-content .gospel-section .reading-title {
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+}
+
+.html-content .gospel-section .reading-reference {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--accent);
+}
+
+.html-content .word-of-lord {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.html-content .response-people {
+  margin: 0.25rem 0 0;
+  text-align: center;
+  font-weight: 700;
+  color: var(--accent);
 }
 
 .install-area {

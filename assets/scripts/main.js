@@ -135,7 +135,7 @@ async function loadMissallete() {
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Erro ao carregar conteúdo.";
-    
+
     if (isSaoPauloSunday()) {
       clearContent();
       setSundayBookletVisibility(true);
