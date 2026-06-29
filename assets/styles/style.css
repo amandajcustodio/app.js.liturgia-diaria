@@ -310,6 +310,15 @@ body {
   color: var(--accent);
 }
 
+.html-content .gospel-cross {
+  display: inline-block;
+  margin-right: 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
 .html-content .word-of-lord {
   margin-top: 1rem;
   text-align: center;
